@@ -1,2 +1,2 @@
 # com.neatwolf.logging
- A per-class reusable logger
+ A basic but SOLID principles compliant per-class customizable logger.
