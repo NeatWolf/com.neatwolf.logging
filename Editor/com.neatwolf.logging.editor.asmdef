@@ -2,7 +2,7 @@
     "name": "com.neatwolf.logging.editor",
     "rootNamespace": "NeatWolf.Logging",
     "references": [
-    ],
+    "GUID:1ba5cb9af8634684498ca8b725fc779d"],
     "includePlatforms": [
         "Editor"
     ],
