@@ -8,12 +8,12 @@ namespace NeatWolf.Logging
     {
         public override void OnInspectorGUI()
         {
-            // DrawDefaultInspector();
+            DrawSettingsGUI(serializedObject);
+        }
 
-            var loggerSettings = (LoggerSettings)target;
-
+        public static void DrawSettingsGUI(SerializedObject serializedObject)
+        {
             // Draw each field manually.
-
             EditorGUI.BeginChangeCheck();
 
             // Draw "defaultLogLevel" field.
@@ -24,6 +24,14 @@ namespace NeatWolf.Logging
             SerializedProperty defaultColors = serializedObject.FindProperty("defaultColors");
             EditorGUILayout.PropertyField(defaultColors);
 
+            // Draw "defaultMessageColor" field.
+            SerializedProperty defaultMessageColor = serializedObject.FindProperty("defaultMessageColor");
+            EditorGUILayout.PropertyField(defaultMessageColor);
+
+            // Draw "defaultLogOutput" field.
+            SerializedProperty defaultLogOutput = serializedObject.FindProperty("defaultLogOutput");
+            EditorGUILayout.PropertyField(defaultLogOutput);
+
             // Draw "classSpecificSettings" field.
             SerializedProperty classSpecificSettings = serializedObject.FindProperty("classSpecificSettings");
             EditorGUILayout.PropertyField(classSpecificSettings);
@@ -31,14 +39,6 @@ namespace NeatWolf.Logging
             if (EditorGUI.EndChangeCheck())
             {
                 serializedObject.ApplyModifiedProperties();
-            }
-
-            if (loggerSettings.defaultClassSettings == null)
-            {
-                loggerSettings.defaultClassSettings = new Log.ClassSettings
-                {
-                    customLogOutput = LoggerSettings.GetOrCreateAsset<UnityConsoleLogOutput>("UnityConsoleLogOutput")
-                };
             }
         }
     }

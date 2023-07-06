@@ -6,12 +6,13 @@ namespace NeatWolf.Logging
 {
     public enum LogLevel
     {
-        Debug,
-        Info,
-        Warning,
-        Error,
-        Exception
+        Debug = 100,  // most detailed log messages
+        Info = 200,   // important runtime events
+        Warning = 300, // potential issues that might lead to errors
+        Error = 400,  // issues that cause program faults
+        Exception = 500  // serious issues causing program to crash
     }
+
 
     public static partial class Log
     {
@@ -24,7 +25,7 @@ namespace NeatWolf.Logging
             public string className;
             public LogLevel logLevel;
             public Color prefixColor = Color.white;
-            public Color messageColor = Color.white;
+            public Color messageColor = Color.grey;
             public LogOutput customLogOutput;
             public bool muted;
         }
@@ -58,7 +59,7 @@ namespace NeatWolf.Logging
 
             OutputLog(exception.ToString(), LogLevel.Exception);
         }
-
+        
         private static void OutputLog(string message, LogLevel logLevel)
         {
             var trace = new StackTrace(true);
@@ -76,20 +77,53 @@ namespace NeatWolf.Logging
             var className = declaringType?.Name;
             var classSettings = _loggerSettings.GetClassSettings(className);
 
+            LogLevel classLevel = classSettings != null ? classSettings.logLevel : _loggerSettings.defaultLogLevel;
+
+            if (classSettings != null 
+                && classSettings.muted) // If the class is muted, do not log any messages from it
+            {
+                return;
+            }
+            
+            if (logLevel < classLevel) // Do not log messages of a level below the specified class/default level
+            {
+                return;
+            }
+
             Color prefixColor = classSettings != null
                 ? classSettings.prefixColor
-                : _loggerSettings.defaultClassSettings.prefixColor;
+                : GetColorForLogLevel(logLevel); // Use color based on LogLevel
             Color messageColor = classSettings != null
                 ? classSettings.messageColor
-                : _loggerSettings.defaultClassSettings.messageColor;
+                : _loggerSettings.defaultMessageColor;
 
             string prefix = $"[{logLevel}] {declaringType}.{method.Name} ({fileName}:{lineNumber})";
 
             var output = classSettings != null && classSettings.customLogOutput != null
                 ? classSettings.customLogOutput
-                : currentOutput;
+                : _loggerSettings.defaultLogOutput;
             if (output != null) output.Output(prefix, message, prefixColor, messageColor);
         }
+        
+        private static Color GetColorForLogLevel(LogLevel logLevel)
+        {
+            switch(logLevel)
+            {
+                case LogLevel.Debug:
+                    return _loggerSettings.defaultColors.debug;
+                case LogLevel.Info:
+                    return _loggerSettings.defaultColors.info;
+                case LogLevel.Warning:
+                    return _loggerSettings.defaultColors.warning;
+                case LogLevel.Error:
+                    return _loggerSettings.defaultColors.error;
+                case LogLevel.Exception:
+                    return _loggerSettings.defaultColors.exception;
+                default:
+                    return Color.white; // Fallback color
+            }
+        }
+
 
         private static LogOutput currentOutput
         {

@@ -22,12 +22,7 @@ namespace NeatWolf.Logging
                 _settings = new SerializedObject(loggerSettings);
             }
 
-            EditorGUILayout.PropertyField(_settings.FindProperty("defaultLogLevel"));
-            EditorGUILayout.PropertyField(_settings.FindProperty("defaultColors"));
-            //EditorGUILayout.PropertyField(_settings.FindProperty("defaultClassSettings"));
-            EditorGUILayout.PropertyField(_settings.FindProperty("classSpecificSettings"));
-
-            _settings.ApplyModifiedProperties();
+            LoggerSettingsEditor.DrawSettingsGUI(_settings);
         }
 
         [SettingsProvider]

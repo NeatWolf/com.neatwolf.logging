@@ -12,17 +12,14 @@ namespace NeatWolf.Logging
     {
         public LogLevel defaultLogLevel = LogLevel.Info;
         public LogColor defaultColors;
-        public Log.ClassSettings defaultClassSettings;
+        public Color defaultMessageColor = Color.white;
+        public LogOutput defaultLogOutput;
         public List<Log.ClassSettings> classSpecificSettings;
 
         private Dictionary<string, Log.ClassSettings> _settingsLookup;
 
         void OnEnable()
         {
-            if (defaultClassSettings == null)
-            {
-                defaultClassSettings = new Log.ClassSettings();
-            }
             if (classSpecificSettings == null)
             {
                 classSpecificSettings = new List<Log.ClassSettings>();
@@ -33,13 +30,12 @@ namespace NeatWolf.Logging
         public Log.ClassSettings GetClassSettings(string className)
         {
             Log.ClassSettings settings;
-            if (_settingsLookup != null && _settingsLookup.TryGetValue(className, out settings) && !settings.muted)
+            if (_settingsLookup != null && _settingsLookup.TryGetValue(className, out settings))
             {
                 return settings;
             }
             return null;
         }
-            
 
         public static T GetOrCreateAsset<T>(string fileName) where T : ScriptableObject
         {
@@ -57,9 +53,8 @@ namespace NeatWolf.Logging
 
             return asset;
 #else
-        return Resources.Load<T>(fileName);
+            return Resources.Load<T>(fileName);
 #endif
         }
-            
     }
 }
